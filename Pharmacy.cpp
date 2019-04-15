@@ -13,6 +13,8 @@
 
 Pharmacy::Pharmacy(char* medicine, char* coins) 
 {
+    penicilinCost = 15;
+    aspirinCost = 5;
     check_medicine(medicine, coins);
 }
 
@@ -21,7 +23,7 @@ Pharmacy::~Pharmacy(){}
 void Pharmacy::check_medicine(char* medicine, char* coins) 
 {
         if (((std::string)medicine == "Penicilin" || (std::string)medicine == "Aspirin")) {
-            give_medicine(atoi(coins));
+            give_medicine(atoi(coins), medicine);
         }
         else {
             std::cout << "There is no such medicine in the pharmacy" << std::endl;
@@ -29,10 +31,22 @@ void Pharmacy::check_medicine(char* medicine, char* coins)
         }
 }
 
-void Pharmacy::give_medicine(int coins_amount) 
+void Pharmacy::give_medicine(int coins_amount, char* medicine) 
 {
-    if (coins_amount != 0) {
-        for (coins_amount; coins_amount > 0; coins_amount--) {
+	int cost;
+	if (!strcmp(medicine,"Penicilin")) {
+		cost = penicilinCost;
+	}
+	else {
+		cost = aspirinCost;
+	}
+    
+    if (coins_amount < cost) {
+        std::cout << "You gave not enough money for this medicine" << std::endl;
+        Sleep(2000);
+        return;
+    }
+        for (int i = 0; i < 5; i++) {
             #ifdef __linux__
             if (_kbhit() != 0) {
                 break;
@@ -52,16 +66,11 @@ void Pharmacy::give_medicine(int coins_amount)
 
         if (!file.is_open()) {
             std::cout << "/* Some problems with file */" << '\n';
-        } 
-        else {
-            file << coins_amount;
-            file.close();
-            std::cout << "Medicines were given" << std::endl;
-            Sleep(2000);
         }
-    }
-    else {
-        std::cout << "No labs" << std::endl;
-        Sleep(2000);
-    }
+        else {
+            file << (coins_amount - cost);
+            file.close();
+            std::cout << std::endl << "Medicine was given" << std::endl;
+            Sleep(1000);
+        }
 }

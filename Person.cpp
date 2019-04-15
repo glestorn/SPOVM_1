@@ -2,6 +2,7 @@
 #include<fstream>
 #include<string>
 #include<ctime>
+#include"Person.h"
 #ifdef __linux__
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -11,7 +12,6 @@
 #include<windows.h>
 #endif
 
-#include"Person.h"
 
 
 Person::Person() {
@@ -97,8 +97,8 @@ void Person::choose_medicine()
     system("CLS");
     #endif
     std::cout << "Choose medicine:" << std::endl
-        << "1 - Penicilin" << std::endl
-        << "2 - Aspirin" << std::endl
+        << "1 - Penicilin (cost 15)" << std::endl
+        << "2 - Aspirin (cost 5)" << std::endl
         << "3 - ETC" << std::endl;
     int choose;
     std::cin >> choose;
@@ -109,19 +109,22 @@ void Person::choose_medicine()
         case 3:new_process("ETC",show_amount_of_labs()); break;
     }
     #elif _WIN32 | _WIN64
-    switch (choose) {
+	switch (choose) {
 		case 1: {
-            std::string peni = "Penicilin " + std::to_string(show_amount_of_coins());
-            new_process(peni); break;
-        }
+			std::string peni = "Penicilin " + std::to_string(show_amount_of_coins());
+			new_process(peni);
+			break;
+		}
 		case 2: {
-            std::string asp = "Aspirin " + std::to_string(show_amount_of_coins());
-            new_process(asp); break;
-        }
+			std::string asp = "Aspirin " + std::to_string(show_amount_of_coins());
+			new_process(asp);
+			break;
+		}
 		case 3: {
-            std::string etc = "ETC " + std::to_string(show_amount_of_coins());
-            new_process(etc); break;
-    }
+			std::string etc = "ETC " + std::to_string(show_amount_of_coins());
+			new_process(etc);
+		}
+	}
     #endif
 }
 
