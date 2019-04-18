@@ -67,7 +67,11 @@ void Person::add_amount_of_coins()
 	std::cout << "Enter amount of coins to add: ";
 	std::cin >> num_of_coins;
 
+#ifdef __linux__
 	std::fstream file("/home/glestorn/CLionProjects/SPOVM_1/Status.txt", std::ios::in);
+#elif _WIN32 | _WIN64
+	std::fstream file("status.txt", std::ios::in);
+#endif
 	if (!file.is_open()) {
 		perror("Impossible to open file\n");
 		return;
@@ -81,7 +85,12 @@ void Person::add_amount_of_coins()
 	}
 	file.close();
 	file_buff += num_of_coins;
+#ifdef __linux__
 	file.open("/home/glestorn/CLionProjects/SPOVM_1/Status.txt", std::ios::out | std::ios::trunc);
+#elif _WIN32 | _WIN64
+	file.open("status.txt", std::ios::out | std::ios::trunc);
+#endif
+
 	if (!file.is_open()) {
 		perror("Impossible to open file\n");
 		return;
@@ -142,7 +151,12 @@ int Person::show_amount_of_coins()
     #elif _WIN32 | _WIN64
     system("CLS");
     #endif
-    std::fstream file("/home/glestorn/CLionProjects/SPOVM_1/Status.txt", std::ios::in);
+#ifdef __linux__
+	std::fstream file("/home/glestorn/CLionProjects/SPOVM_1/Status.txt", std::ios::in);
+#elif _WIN32 | _WIN64
+	std::fstream file("status.txt", std::ios::in);
+#endif
+
     if (!file.is_open()) {
         perror("Impossible to open file\n");
         return 0;
@@ -165,45 +179,45 @@ void Person::new_process(const char* param1, int param2)
 {
     system("clear");
     char str[11];
-  sprintf(str, "%d", param2);
-  pid_t pid = fork();
-  initscr();
-  noecho();
-  curs_set(0);
-  int state;
-  if (pid < 0) {
-      std::cout << "Unlucky attempt!" << std::endl;
-      return;
-  }
-  else if (pid > 0){
-      time_t ltime;
-      while(true){
-          showTime(ltime);
+	sprintf(str, "%d", param2);
+	pid_t pid = fork();
+	initscr();
+	noecho();
+	curs_set(0);
+	int state;
+	if (pid < 0) {
+		std::cout << "Unlucky attempt!" << std::endl;
+		return;
+	}
+	else if (pid > 0) {
+		time_t ltime;
+		while(true) {
+			showTime(ltime);
 
-          if(waitpid(pid, &state, WNOHANG) > 0) {
-              napms(1000);
-              break;
-          }
-          napms(1);
-      }
-  }
-  else {
-    if(execlp("./main", param1, str, NULL) == -1) {
-      std::cout << "Error" << '\n';
-    }
+			if(waitpid(pid, &state, WNOHANG) > 0) {
+				napms(1000);
+				break;
+			}
+			napms(1);
+		}
+	}
+	else {
+		if(execlp("./main", param1, str, NULL) == -1) {
+			std::cout << "Error" << '\n';
+		}
 
-    exit(0);
-  }
+		exit(0);
+	}
 
-  endwin();
+	endwin();
 }
 
 void Person::showTime(time_t ltime)
 {
-    refresh();
-    time(&ltime);
-    move(0, 0);
-    printw(ctime(&ltime));
+	refresh();
+	time(&ltime);
+	move(0, 0);
+	printw(ctime(&ltime));
 }
 
 
@@ -222,7 +236,7 @@ void Person::new_process(std::string param)
 					   NULL,					// Process handle not inheritable
 					   NULL,					// Thread handle not inheritable
 					   FALSE,					// Set handle inheritance to FALSE
-					   CREATE_NEW_CONSOLE,		// lol
+					   CREATE_NEW_CONSOLE,		// add second console
 					   NULL,					// Use parent's environment block
 					   NULL,					// Use parent's starting directory 
 					   &si,						// Pointer to STARTUPINFO structure
@@ -241,7 +255,8 @@ void Person::new_process(std::string param)
     end = clock();
     std::cout << std::endl;
     std::cout << "Child process runtime: " << (double)(end - beg) / CLK_TCK << std::endl;
-    CloseHandle(pi.hProcess);
+    //CloseHandle(pi.hProcess);
+	//std::cout << "Hello world, buddy";
 }
 
 #endif

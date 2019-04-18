@@ -46,7 +46,7 @@ void Pharmacy::give_medicine(int coins_amount, char* medicine)
     if (coins_amount < cost) {
         std::cout << "You gave not enough money for this medicine" << std::endl;
 #ifdef _WIN32
-        sleep(2000);
+        Sleep(2000);
 #endif
         return;
     }
@@ -62,9 +62,11 @@ void Pharmacy::give_medicine(int coins_amount, char* medicine)
         Sleep(1000);
         #endif
     }
-
+#ifdef __linux__
     std::fstream file("/home/glestorn/CLionProjects/SPOVM_1/Status.txt", std::ios::out | std::ios::trunc);
-
+#elif _WIN32 | _WIN64
+	std::fstream file("status.txt", std::ios::out | std::ios::trunc);
+#endif
     if (!file.is_open()) {
         std::cout << "/* Some problems with file */" << std::endl;
     }
@@ -72,8 +74,8 @@ void Pharmacy::give_medicine(int coins_amount, char* medicine)
         file << (coins_amount - cost);
         file.close();
         std::cout << "Medicine was given" << std::endl;
-#ifdef _WIN64
-//        sleep(2000);
+#ifdef _WIN32
+        sleep(2000);
 #endif
     }
 }
