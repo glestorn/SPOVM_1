@@ -43,22 +43,17 @@ void Pharmacy::give_medicine(int coins_amount, char* medicine)
 	else {
 		cost = aspirinCost;
 	}
-    //std::cout << cost << std::endl;
-    //system("clear");
     if (coins_amount < cost) {
         std::cout << "You gave not enough money for this medicine" << std::endl;
 #ifdef _WIN32
-        sleep(2000);cd
+        sleep(2000);
 #endif
         return;
     }
 
     for (int i = 0; i < 5; i++) {
         #ifdef __linux__
-        //std::cout << ".";
-        //printw(".");
-        //napms(50);
-        sleep(1);
+        napms(1000);
         #elif _WIN32 | _WIN64
         if (_kbhit() != 0) {
             break;
@@ -71,14 +66,14 @@ void Pharmacy::give_medicine(int coins_amount, char* medicine)
     std::fstream file("/home/glestorn/CLionProjects/SPOVM_1/Status.txt", std::ios::out | std::ios::trunc);
 
     if (!file.is_open()) {
-        std::cout << "/* Some problems with file */" << '\n';
+        std::cout << "/* Some problems with file */" << std::endl;
     }
     else {
         file << (coins_amount - cost);
         file.close();
         std::cout << "Medicine was given" << std::endl;
-        //mvprintw(15,0,"Medicine was given");
-        //sleep(200);
-        //napms(250);
+#ifdef _WIN64
+//        sleep(2000);
+#endif
     }
 }

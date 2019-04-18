@@ -50,7 +50,7 @@ void Person::start_menu() {
         #elif _WIN32 | _WIN64
         system("pause");
         #endif
-    } while (1);
+    } while (true);
 }
 
 
@@ -163,18 +163,13 @@ int Person::show_amount_of_coins()
 
 void Person::new_process(const char* param1, int param2)
 {
-    //initscr();
-    //curs_set(0);
     system("clear");
     char str[11];
   sprintf(str, "%d", param2);
   pid_t pid = fork();
-  //initscr();
-  //SCREEN* newTerminal;
-  //newTerminal = newterm(str, NULL, NULL);
-  //set_term(newTerminal);
-  //noecho();     //activize lncurses library
-  //curs_set(0);  //hide cursor
+  initscr();
+  noecho();
+  curs_set(0);
   int state;
   if (pid < 0) {
       std::cout << "Unlucky attempt!" << std::endl;
@@ -183,22 +178,13 @@ void Person::new_process(const char* param1, int param2)
   else if (pid > 0){
       time_t ltime;
       while(true){
-            //move(0,0);
-//          refresh();
-//          time(&ltime);
-//          move(0, 0);
-//          printw(ctime(&ltime));
-          //printw("\n");
-          //showTime();
+          showTime(ltime);
 
           if(waitpid(pid, &state, WNOHANG) > 0) {
+              napms(1000);
               break;
           }
-          //sleep(1);
-          showTime();
-          sleep(1);
-          //sleep(1);
-          //napms(500);
+          napms(1);
       }
   }
   else {
@@ -208,23 +194,16 @@ void Person::new_process(const char* param1, int param2)
 
     exit(0);
   }
-  //printw("");
-  //refresh();
-  //endwin();
+
+  endwin();
 }
 
-void Person::showTime()
+void Person::showTime(time_t ltime)
 {
-//    time_t ltime;
-//    refresh();
-//    time(&ltime);
-//    move(0, 0);
-//    printw(ctime(&ltime));
-    time_t rawtime;
-    struct tm * timeinfo;
-    time(&rawtime);
-    timeinfo = localtime(&rawtime);
-    std::cout << "Current local time and date: " << asctime(timeinfo);
+    refresh();
+    time(&ltime);
+    move(0, 0);
+    printw(ctime(&ltime));
 }
 
 
