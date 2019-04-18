@@ -1,9 +1,13 @@
 #include<iostream>
 #include<string>
 #include<fstream>
+#include<cstring>
 #ifdef __linux__
 #include <unistd.h>
 #include <sys/wait.h>
+#include <thread>
+#include <chrono>
+#include <ncurses.h>
 #elif _WIN32 | _WIN64
 #include<windows.h>
 #include<conio.h>
@@ -27,7 +31,6 @@ void Pharmacy::check_medicine(char* medicine, char* coins)
         }
         else {
             std::cout << "There is no such medicine in the pharmacy" << std::endl;
-			Sleep(2000);
         }
 }
 
@@ -40,37 +43,42 @@ void Pharmacy::give_medicine(int coins_amount, char* medicine)
 	else {
 		cost = aspirinCost;
 	}
-    
+    //std::cout << cost << std::endl;
+    //system("clear");
     if (coins_amount < cost) {
         std::cout << "You gave not enough money for this medicine" << std::endl;
-        Sleep(2000);
+#ifdef _WIN32
+        sleep(2000);cd
+#endif
         return;
     }
-        for (int i = 0; i < 5; i++) {
-            #ifdef __linux__
-            if (_kbhit() != 0) {
-                break;
-            }
-            std::cout << ".";
-            Sleep(1000);
-            #elif _WIN32 | _WIN64
-            if (_kbhit() != 0) {
-                break;
-            }
-            std::cout << ".";
-            Sleep(1000);
-            #endif
-        }
-        
-        std::fstream file("status.txt", std::ios::out | std::ios::trunc);
 
-        if (!file.is_open()) {
-            std::cout << "/* Some problems with file */" << '\n';
+    for (int i = 0; i < 5; i++) {
+        #ifdef __linux__
+        //std::cout << ".";
+        //printw(".");
+        //napms(50);
+        sleep(1);
+        #elif _WIN32 | _WIN64
+        if (_kbhit() != 0) {
+            break;
         }
-        else {
-            file << (coins_amount - cost);
-            file.close();
-            std::cout << std::endl << "Medicine was given" << std::endl;
-            Sleep(1000);
-        }
+        std::cout << ".";
+        Sleep(1000);
+        #endif
+    }
+
+    std::fstream file("/home/glestorn/CLionProjects/SPOVM_1/Status.txt", std::ios::out | std::ios::trunc);
+
+    if (!file.is_open()) {
+        std::cout << "/* Some problems with file */" << '\n';
+    }
+    else {
+        file << (coins_amount - cost);
+        file.close();
+        std::cout << "Medicine was given" << std::endl;
+        //mvprintw(15,0,"Medicine was given");
+        //sleep(200);
+        //napms(250);
+    }
 }

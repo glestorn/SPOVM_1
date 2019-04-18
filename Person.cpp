@@ -8,6 +8,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <cstdlib>
+#include<cstring>
+#include<ncurses.h>
 #elif _WIN32 | _WIN64
 #include<windows.h>
 #endif
@@ -65,7 +67,7 @@ void Person::add_amount_of_coins()
 	std::cout << "Enter amount of coins to add: ";
 	std::cin >> num_of_coins;
 
-	std::fstream file("status.txt", std::ios::in);
+	std::fstream file("/home/glestorn/CLionProjects/SPOVM_1/Status.txt", std::ios::in);
 	if (!file.is_open()) {
 		perror("Impossible to open file\n");
 		return;
@@ -79,7 +81,7 @@ void Person::add_amount_of_coins()
 	}
 	file.close();
 	file_buff += num_of_coins;
-	file.open("status.txt", std::ios::out | std::ios::trunc);
+	file.open("/home/glestorn/CLionProjects/SPOVM_1/Status.txt", std::ios::out | std::ios::trunc);
 	if (!file.is_open()) {
 		perror("Impossible to open file\n");
 		return;
@@ -102,11 +104,14 @@ void Person::choose_medicine()
         << "3 - ETC" << std::endl;
     int choose;
     std::cin >> choose;
+    const char* peni = "Penicilin";
+    const char* asp = "Aspirin";
+    const char* etc = "ETC";
     #ifdef __linux__
     switch (choose) {
-        case 1:new_process("Penicilin", show_amount_of_labs()); break;
-        case 2:new_process("Aspirin", show_amount_of_labs()); break;
-        case 3:new_process("ETC",show_amount_of_labs()); break;
+        case 1:new_process(peni, show_amount_of_coins()); break;
+        case 2:new_process(asp, show_amount_of_coins());  break;
+        case 3:new_process(etc,show_amount_of_coins());   break;
     }
     #elif _WIN32 | _WIN64
 	switch (choose) {
@@ -137,7 +142,7 @@ int Person::show_amount_of_coins()
     #elif _WIN32 | _WIN64
     system("CLS");
     #endif
-    std::fstream file("status.txt", std::ios::in);
+    std::fstream file("/home/glestorn/CLionProjects/SPOVM_1/Status.txt", std::ios::in);
     if (!file.is_open()) {
         perror("Impossible to open file\n");
         return 0;
@@ -156,36 +161,66 @@ int Person::show_amount_of_coins()
 
 #ifdef __linux__
 
-void Person::new_process(char* param1, int param2)
+void Person::new_process(const char* param1, int param2)
 {
-  char str[11];
+    //initscr();
+    //curs_set(0);
+    system("clear");
+    char str[11];
   sprintf(str, "%d", param2);
   pid_t pid = fork();
+  //initscr();
+  //SCREEN* newTerminal;
+  //newTerminal = newterm(str, NULL, NULL);
+  //set_term(newTerminal);
+  //noecho();     //activize lncurses library
+  //curs_set(0);  //hide cursor
   int state;
-  if(pid == 0) {
-    if(execlp("./child", param1, str, NULL) == -1){
+  if (pid < 0) {
+      std::cout << "Unlucky attempt!" << std::endl;
+      return;
+  }
+  else if (pid > 0){
+      time_t ltime;
+      while(true){
+            //move(0,0);
+//          refresh();
+//          time(&ltime);
+//          move(0, 0);
+//          printw(ctime(&ltime));
+          //printw("\n");
+          //showTime();
+
+          if(waitpid(pid, &state, WNOHANG) > 0) {
+              break;
+          }
+          //sleep(1);
+          showTime();
+          sleep(1);
+          //sleep(1);
+          //napms(500);
+      }
+  }
+  else {
+    if(execlp("./main", param1, str, NULL) == -1) {
       std::cout << "Error" << '\n';
     }
-  exit(0);
+
+    exit(0);
   }
-
-  else if (pid > 0){
-
-    while(1){
-
-      if(waitpid(pid,&state, WNOHANG) > 0){
-        break;
-      }
-      showTime();
-
-      sleep(1);
-    }
-  }
+  //printw("");
+  //refresh();
+  //endwin();
 }
 
 void Person::showTime()
 {
-  time_t rawtime;
+//    time_t ltime;
+//    refresh();
+//    time(&ltime);
+//    move(0, 0);
+//    printw(ctime(&ltime));
+    time_t rawtime;
     struct tm * timeinfo;
     time(&rawtime);
     timeinfo = localtime(&rawtime);
